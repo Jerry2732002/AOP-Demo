@@ -2,6 +2,7 @@ package com.LibraryManagement.demo.dao;
 
 import com.LibraryManagement.demo.dto.Book;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -58,15 +59,19 @@ public class BookRepository {
 
     public Book findBookByID(int id) {
         String sql = "SELECT * FROM Books WHERE BookID = ?";
+        try {
 
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
-            Book book = new Book();
+            return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
+                Book book = new Book();
 
-            book.setId(rs.getInt("BookID"));
-            book.setTitle(rs.getString("Title"));
-            book.setAuthor(rs.getString("Author"));
+                book.setId(rs.getInt("BookID"));
+                book.setTitle(rs.getString("Title"));
+                book.setAuthor(rs.getString("Author"));
 
-            return book;
-        });
+                return book;
+            });
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }

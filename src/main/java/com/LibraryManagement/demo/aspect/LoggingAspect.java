@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 public class LoggingAspect {
-    @Pointcut("execution(* com.LibraryManagement.demo.service.*.*(..))")
-    public void bookServiceMethods() {
+    @Pointcut("execution(* com.LibraryManagement.demo.service.BookService.*(..))")
+    private void bookServiceMethods() {
     }
 
-    @Around("bookServiceMethods")
+    @Around("execution(* com.LibraryManagement.demo.service.BookService.*(..))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         String methodName = joinPoint.getSignature().getName();
@@ -24,7 +24,8 @@ public class LoggingAspect {
 
         return result;
     }
-    @Before("bookServiceMethods")
+
+    @Before("execution(* com.LibraryManagement.demo.service.BookService.*(..))")
     public void beforeServiceMethod(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
 
@@ -39,7 +40,7 @@ public class LoggingAspect {
     public void getMappingMethods() {
     }
 
-    @Before("getMappingMethods()")
+    @Before("@annotation(org.springframework.web.bind.annotation.GetMapping)")
     public void logMethodArguments(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
 
@@ -50,7 +51,7 @@ public class LoggingAspect {
         }
     }
 
-    @AfterThrowing(pointcut = "bookServiceMethods", throwing = "exception")
+    @AfterThrowing(pointcut = "execution(* com.LibraryManagement.demo.service.BookService.*(..))", throwing = "exception")
     public void exceptionLogging(JoinPoint joinPoint, Throwable exception) {
         System.err.println("Method: " + joinPoint.getSignature().getName() + ", Error: " + exception);
     }
